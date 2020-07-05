@@ -9,6 +9,7 @@ def main():
     st.title("Project 1 - Data Analysis")
 
     df = pd.read_csv("movies_complete.csv", parse_dates=["release_date"])
+    df["Franchise"] = df.belongs_to_collection.notna()
 
     def best_worst(
         by, n=5, ascending=False, min_budget=0, min_votes=0, custom_column=False
@@ -73,6 +74,22 @@ def main():
         st.markdown(
             best_worst(best_worst_value, ascending=True), unsafe_allow_html=True
         )
+
+    franchise_counts = df["Franchise"].value_counts()
+    avg_revenue = df.groupby("Franchise").revenue_musd.mean()
+
+    df["ROI"] = df.revenue_musd.div(df.budget_musd)
+    roi = df.groupby("Franchise").ROI.median()
+
+    franchise_df = pd.DataFrame(
+        {"counts": franchise_counts, "avg_revenue": avg_revenue, "roi": roi}
+    )
+    franchise_df.rename(index={False: "Not a Franchise", True: "Is a Franchise"}, inplace=True)
+
+    st.text("")
+    st.subheader("Are Franchises more successful?")
+    st.text("")
+    st.dataframe(franchise_df)
 
 
 main()
