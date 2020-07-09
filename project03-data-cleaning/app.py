@@ -23,22 +23,30 @@ def render_summary_info(content: pd.DataFrame):
 
     info = "\n".join(lines[0:2] + lines[-2:-1])
     st.subheader("Dataframe info")
-    st.text(info)
     st.table(datatypes)
 
-    st.subheader("Summary statistics")
-    st.table(content.describe(include="all").T)
+    if st.sidebar.checkbox("View summary statistics"):
+        st.subheader("Summary statistics")
+        st.table(content.describe(include="all").T)
+
     return info, datatypes
+
+def clean_data(df: pd.DataFrame):
+    columns = st.sidebar.multiselect("Drop columns", list(df.columns))
+    return df.drop(columns=columns)
 
 
 def main():
     # setup
     df = pd.read_csv("movies_metadata.csv", low_memory=False)
 
-    # render header and overview info
+    # render header
     render_header()
-    if st.sidebar.checkbox("View summary information"):
-        render_summary_info(df)
 
+    # interactive data cleaning
+    clean_df = clean_data(df)
+
+    # render cleaned information
+    render_summary_info(clean_df)
 
 main()
