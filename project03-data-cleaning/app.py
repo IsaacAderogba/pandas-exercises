@@ -6,7 +6,6 @@ import numpy as np
 
 def render_header():
     st.title("Project 3 - Data Cleaning")
-    st.subheader("Tidying up messy datasets")
 
 
 def render_summary_info(content: pd.DataFrame):
@@ -32,8 +31,14 @@ def render_summary_info(content: pd.DataFrame):
     return info, datatypes
 
 def clean_data(df: pd.DataFrame):
-    columns = st.sidebar.multiselect("Drop columns", list(df.columns))
-    return df.drop(columns=columns)
+    column_names = list(df.columns)
+    column_name = st.sidebar.selectbox("Inspect column", column_names)
+
+    st.subheader(f"{column_name} value counts")
+    st.table(df[column_name].value_counts())
+
+    columns_to_remove = st.sidebar.multiselect("Drop columns", column_names)
+    return df.drop(columns=columns_to_remove)
 
 
 def main():
