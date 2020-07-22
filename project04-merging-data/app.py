@@ -14,6 +14,15 @@ def render_data_to_merge(df, credits_df):
     st.dataframe(credits_df[~credits_df.id.isin(df.id)])
 
 
+def render_and_return_merged_data(df, credits_df):
+    st.subheader("Merged data (just 50 to avoid runtime errors)")
+
+    df = df.merge(credits_df, how="left", left_on="id", right_on="id")
+    st.dataframe(df.head(50))
+
+    return df
+
+
 def main():
     df = pd.read_csv("movies_clean.csv", parse_dates=["release_date"])
 
@@ -22,6 +31,8 @@ def main():
 
     render_header()
     render_data_to_merge(df, credits_df)
+
+    merged_df = render_and_return_merged_data(df, credits_df)
 
 
 main()
